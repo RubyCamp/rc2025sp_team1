@@ -32,44 +32,44 @@ lm_pin2.duty(0)
 rm_pin1.duty(0)
 rm_pin2.duty(0)
 
-sleep 3
+sleep 2.5
 
 # Dに向かう
-lm_pin1.duty(80)
+lm_pin1.duty(30)
 lm_pin2.duty(0)
-rm_pin1.duty(100)
+rm_pin1.duty(50)
 rm_pin2.duty(0)
 
-sleep 3
+sleep 2
 
 # Bに向かう
-lm_pin1.duty(100)
+lm_pin1.duty(40)
 lm_pin2.duty(0)
-rm_pin1.duty(100)
+rm_pin1.duty(50)
 rm_pin2.duty(0)
 
-sleep 3
+sleep 2
 
 #Aに向かう
-lm_pin1.duty(80)
+lm_pin1.duty(30)
 lm_pin2.duty(0)
-rm_pin1.duty(100)
+rm_pin1.duty(50)
 rm_pin2.duty(0)
 
-sleep 3
+sleep 2
 
 #Cに向かう
-lm_pin1.duty(80)
+lm_pin1.duty(40)
 lm_pin2.duty(0)
-rm_pin1.duty(100)
+rm_pin1.duty(50)
 rm_pin2.duty(0)
 
-sleep 3
+sleep 2
 
 #ゴール
-lm_pin1.duty(100)
+lm_pin1.duty(50)
 lm_pin2.duty(0)
-rm_pin1.duty(90)
+rm_pin1.duty(40)
 rm_pin2.duty(0)
 
 sleep 1
