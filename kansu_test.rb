@@ -9,7 +9,7 @@
    lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
    lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
 
-def kanimove(t,lmpin1,lmpin2,rmpin1,rmpin2)
+def kanimove(t,lmpin1,lmpin2,rmpin1,rmpin2) #(秒数*0.2,左モーターpin1,左モーターpin2,右モーターpin1,右モーターpin2)
     i = 0
     t.times do
         @lm_pin1.duty(lmpin1)
@@ -20,6 +20,24 @@ def kanimove(t,lmpin1,lmpin2,rmpin1,rmpin2)
         i += 0.2
     end
     puts "#{i} 秒間移動しました"
+end
+
+def kanirotate(t,r,l)#(秒数*0.2,右回転強さ,左回転強さ)
+    i = 0
+    t.times do
+        @lm_pin1.duty(r)
+        @lm_pin2.duty(l)
+        @rm_pin1.duty(l)
+        @rm_pin2.duty(r)
+        sleep 0.2
+        i += 0.2
+    end
+    if r >= l
+        puts "#{i} 秒間右回転しました"
+    end
+    elsif r <= l
+        puts "#{i} 秒間左回転しました"
+    end
 end
 
 def brake
@@ -33,7 +51,7 @@ end
 kanimove(10,40,0,40,0)
 
 #回転
-kanimove(4,40,0,0,40)
+kanirotate(4,40,0)
 
 #移動
 kanimove(9,40,0,40,0)
