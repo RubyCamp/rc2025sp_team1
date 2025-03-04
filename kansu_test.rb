@@ -29,13 +29,14 @@ def brake
     @rm_pin2.duty(100)
 end
 
-#Eまで移動
+#移動
 kanimove(10,40,0,40,0)
 
-   #回転
+#回転
 kanimove(4,40,0,0,40)
 
-#Eのボールを取得、Gへ向かう
+#移動
 kanimove(9,40,0,40,0)
 
+#ブレーキ
 brake
