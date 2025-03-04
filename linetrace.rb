@@ -42,7 +42,7 @@
        
        # 左右モーター出力30%正回転
        lm_pin1.duty(30)
-       lm_pin2.duty(00)
+       lm_pin2.duty(0)
        rm_pin1.duty(30)
        rm_pin2.duty(0)
        sleep (0.1)
