@@ -19,7 +19,7 @@ lm_pin2 = PWM.new(33) # 左モーターPIN2
 
 
 # 左右モーター出力100%正回転
-lm_pin1.duty(50)
+lm_pin1.duty(45)
 lm_pin2.duty(0)
 rm_pin1.duty(40)
 rm_pin2.duty(0)
@@ -32,10 +32,10 @@ lm_pin2.duty(0)
 rm_pin1.duty(0)
 rm_pin2.duty(0)
 
-sleep 2.5
+sleep 1.5
 
 # Dに向かう
-lm_pin1.duty(30)
+lm_pin1.duty(40)
 lm_pin2.duty(0)
 rm_pin1.duty(50)
 rm_pin2.duty(0)
@@ -45,13 +45,13 @@ sleep 2
 # Bに向かう
 lm_pin1.duty(40)
 lm_pin2.duty(0)
-rm_pin1.duty(50)
+rm_pin1.duty(45)
 rm_pin2.duty(0)
 
 sleep 2
 
 #Aに向かう
-lm_pin1.duty(30)
+lm_pin1.duty(40)
 lm_pin2.duty(0)
 rm_pin1.duty(50)
 rm_pin2.duty(0)
