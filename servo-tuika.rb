@@ -42,11 +42,6 @@ else
         #servo.pulse_width_us(2000) # 90度に設定
         puts "OK"
     else
-        #モータを止める
-        lm_pin1.duty(30)
-        lm_pin2.duty(00)
-        rm_pin1.duty(30)
-        rm_pin2.duty(0)
         servo.pulse_width_us(2500) # 90度に設定
         puts "NO"
     end
