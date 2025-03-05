@@ -22,6 +22,24 @@ def kanimove(t,lmpin1,lmpin2,rmpin1,rmpin2)
     puts "#{i} 秒間移動しました"
 end
 
+def kanirotate(t,r,l)#(秒数*0.2,右回転強さ,左回転強さ)
+    i = 0
+    t.times do
+        @lm_pin1.duty(r)
+        @lm_pin2.duty(l)
+        @rm_pin1.duty(l)
+        @rm_pin2.duty(r)
+        sleep 0.2
+        i += 0.2
+    end
+    if r >= l
+        puts "#{i} 秒間右回転しました"
+    end
+    elsif r <= l
+        puts "#{i} 秒間左回転しました"
+    end
+end
+
 def brake
     @lm_pin1.duty(100)
     @lm_pin2.duty(100)
@@ -29,11 +47,14 @@ def brake
     @rm_pin2.duty(100)
 end
 
-#Eまで移動
-kanimove(10,40,0,40,0)
+#回転
+kanimove(1,35,0,0,35)
 
-   #回転
-kanimove(4,40,0,0,40)
+#Eまで移動
+kanimove(10,40,0,37,0)
+
+#回転
+kanimove(4,35,0,0,35)
 
 #Eのボールを取得、Gへ向かう
 kanimove(9,40,0,40,0)
