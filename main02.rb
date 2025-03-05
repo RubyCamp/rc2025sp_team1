@@ -9,43 +9,41 @@
 lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
 lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
 
-def kanimove(t) # (秒数*0.3)
-    i = 0
-    t.times do
-        @lm_pin1.duty(30)
-        @lm_pin2.duty(0)
-        @rm_pin1.duty(30)
-        @rm_pin2.duty(0)
-        sleep 0.1
-        i += 0.1
-    end
-    puts "#{i * 4} 秒間移動しました"
+def kanimove(t) 
+    @lm_pin1.duty(100)
+    @lm_pin2.duty(80)
+    @rm_pin1.duty(100)
+    @rm_pin2.duty(60)
+    sleep 0.5
+    @lm_pin1.duty(100)
+    @lm_pin2.duty(69)
+    @rm_pin1.duty(100)
+    @rm_pin2.duty(72)
+    sleep t - 0.5
+    puts "#{t} 秒間移動しました"
 end
 
+#kanirotate
 @r = 0
 @l = 1
 def kanirotate(t, rl) # (秒数*0.2,右=0 左=1)
-    i = 0
+        @rm_pin1.duty(15)
+        @rm_pin2.duty(40)
+        sleep 0.1
     if rl == 0 
-        t.times do
-            @lm_pin1.duty(29)
-            @lm_pin2.duty(0)
-            @rm_pin1.duty(0)
-            @rm_pin2.duty(30)
-            i += 0.1
-            sleep 0.1
-        end
-        puts "#{i * 2} 秒間右回転しました"
-    else
-        t.times do
-            @lm_pin1.duty(0)
-            @lm_pin2.duty(30)
-            @rm_pin1.duty(30)
-            @rm_pin2.duty(0)
-            sleep 0.1
-            i += 0.1
-        end
-        puts "#{i * 2} 秒間左回転しました"
+        @lm_pin1.duty(40)
+        @lm_pin2.duty(15)
+        @rm_pin1.duty(15)
+        @rm_pin2.duty(40)
+        sleep t
+        puts "#{t} 秒間右回転しました"
+elsif
+        @lm_pin1.duty(15)
+        @lm_pin2.duty(40)
+        @rm_pin1.duty(40)
+        @rm_pin2.duty(15)
+        sleep t
+        puts "#{t} 秒間左回転しました"
     end
 end
 
@@ -57,26 +55,23 @@ def brake
     puts "ブレーキを掛けました"
 end
 
-#回転
-kanirotate(1, @r)
+#回転してEの方向を向く
+kanirotate(0.5,@r)
 
-#Eまで移動
-kanimove(12)
-
-#回転、Gの方向を向く
-kanirotate(6, @r)
-
-#Gまで移動
+#Eまで動く
 kanimove(10)
+
+#E,Dまで移動
+kanimove(6)
 
 #回転、Bの方向を向く
-kanirotate(4,@l)
+kanirotate(1,@l)
 
 #Bまで移動
-kanimove(10)
+kanimove(4)
 
 #回転、Aの方向を向く
-kanirotate(4,@l)
+kanirotate(3,@l)
 
 #Aまで移動
 kanimove(7)
@@ -91,4 +86,4 @@ kanimove(15)
 kanirotate(6,@r)
 
 #カニをゴールへシュート！超！エキサイティング！
-brake
+brake()
