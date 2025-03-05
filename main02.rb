@@ -54,18 +54,21 @@ end
     @rm_pin2.duty(80)
     sleep 0.2
 #回転してEの方向を向く
-kanirotate(0.33,@r)
+kanirotate(0.32,@r)
 
 #Eまで動く
-4.times do
-    kanimove(3)
-end
+kanimove(3)
+kanirotate(0.05,@r)
+kanimove(3.5)
 #Dの方向を向く
-kanirotate(4.5,@r)
+kanirotate(3.4,@r)
+
 #Dまで移動
-kanimove(11)
+kanimove(2)
+kanimove(3)
+
 #回転、Bの方向を向く
-kanirotate(0.8,@l)
+kanirotate(0.4,@l)
 
 #Bまで移動
 5.times do
@@ -98,3 +101,4 @@ kanirotate(1,@r)
     @rm_pin2.duty(0)
     sleep 6
 brake()
+
