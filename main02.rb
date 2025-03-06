@@ -90,32 +90,64 @@ end
 #回転してEの方向を向く
 kanirotate(0.3,@r)
 kanirotate(0.2,@l)
+
 #Eまで動く
 kanimove(3.5)
 kanirotate(0.2,@r)
-kanirotate(0.15,@l)
-kanimove(4)
+kanirotate(0.12,@l)
+kanimove(2.8)
+if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
+puts "ボールをつかみました！ゴールへ向かいます！"
+kanirotate(0.5,@r)
+    @lm_pin1.duty(100)
+    @lm_pin2.duty(60)
+    @rm_pin1.duty(100)
+    @rm_pin2.duty(54)
+    sleep
+end
+
 #Dの方向を向く
-kanirotate(2.5,@r)
+kanirotate(1.6,@r)
 
 #Dまで移動
-kanimove(3)
-kanirotate(0.3,@l)
 kanimove(2)
+kanimove(2)
+if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
+puts "ボールをつかみました！ゴールへ向かいます！"
+kanirotate(1.5,@l)
+    @lm_pin1.duty(100)
+    @lm_pin2.duty(60)
+    @rm_pin1.duty(100)
+    @rm_pin2.duty(54)
+    sleep
+end
 
 #回転、Bの方向を向く
-kanirotate(2.5,@l)
+kanirotate(0.5,@l)
+
 
 #Bまで移動
-5.times do
-    kanimove(3)
+kanimove(3)
+kanirotate(0.15,@l)
+kanimove(3)
+kanirotate(0.18,@l)
+kanimove(3)
+if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
+puts "ボールをつかみました！ゴールへ向かいます！"
+kanirotate(1.5,@l)
+    @lm_pin1.duty(100)
+    @lm_pin2.duty(55)
+    @rm_pin1.duty(100)
+    @rm_pin2.duty(60)
+    sleep
 end
 
 #回転、Aの方向を向く
-kanirotate(1.3,@l)
+kanirotate(1.5,@l)
 
 #Aまで移動
-kanimove(18)
+kanimove(3)
+kanimove(3)
 
 #回転、Cの方向を向く
 kanirotate(1.5,@l)
