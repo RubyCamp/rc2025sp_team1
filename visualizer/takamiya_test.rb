@@ -27,7 +27,15 @@ class Player
     @x_speed = 0
     @y_speed = 0
     @target = nil
-    @image = Gosu::Image.new("images/kani.png", tileable: false)
+    @image1 = Gosu::Image.new("images/kani.png", tileable: false)
+    @image2 = Gosu::Image.new("images/kani2.png", tileable: false)
+  end
+
+  def center
+    #画像を2枚にしたタイミングでif文つける
+    cx = (@image1.width / 2)
+    cy = (@image1.height / 2)
+    [cx, cy]
   end
 
   def move_to(checkpoint, duration)
@@ -43,9 +51,12 @@ class Player
     @x += @x_speed
     @y += @y_speed
 
+    @cx, @cy = center
+
     # 目的地に到達したかチェック（厳密比較ではなく誤差を許容）
     if (@x - @target[0]).abs < 1 && (@y - @target[1]).abs < 1
       @x, @y = @target
+      @cx, @cy = center
       @x_speed = 0
       @y_speed = 0
       @target = nil
@@ -53,7 +64,7 @@ class Player
   end
 
   def draw
-    @image.draw(@x - 50, @y - 62, 1)
+    @image1.draw(@x - @cx, @y - @cy, 1)
   end
 end
 
