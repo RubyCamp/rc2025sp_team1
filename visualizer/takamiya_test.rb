@@ -1,4 +1,5 @@
 require 'gosu'
+require 'singleton'
 
 require_relative 'server'
 
@@ -12,17 +13,20 @@ Checkpoints = {
 }
 
 MoveTimes = {
-  e: 3000,
-  d: 4000,
-  b: 5000,
-  a: 6000,
-  c: 7000,
-  goal: 8000
+  e: 6000,
+  d: 8000,
+  b: 10000,
+  a: 12000,
+  c: 14000,
+  goal: 16000
 }
 
 class Player
+
+  include Singleton
+
   attr_reader :x, :y
-  attr_accessor :x, :y, :angle, :image1, :image2, :set_image
+  attr_accessor :x, :y, :angle, :image1, :image2, :set_image, :ball_hold
 
   def initialize
     @x = 700  
@@ -34,6 +38,12 @@ class Player
     @image1 = Gosu::Image.new("images/kani.png", tileable: false)
     @image2 = Gosu::Image.new("images/kani_ball.png", tileable: false)
     @set_image = @image1
+    @ball_hold = true
+  end
+
+  def set_hold(value)
+    @ball_hold = value
+    p @ball_hold
   end
 
   def center
@@ -51,6 +61,7 @@ class Player
   end
 
   def update
+    # puts @ball_hold
     return unless @target
 
     @x += @x_speed
@@ -76,6 +87,7 @@ class Player
 end
 
 class Ball
+  attr_accessor :ball_x, :ball_y, :ball_image1
   def initialize(player)
     @player = player
     @ball_x = 0
@@ -84,6 +96,7 @@ class Ball
   end
 
   def update
+    @cx, @cy = center
     if Gosu.button_down?(Gosu::KB_E)
       @ball_x = 667
       @ball_y = 300 
@@ -104,24 +117,27 @@ class Ball
       @ball_x = 400
       @ball_y = 450 
     end
-    if @player.x == @ball_x || @player.y == @ball_y
-      @ball_x = 0
-      @ball_y = 0
-      @player.set_image = @player.image2
-    end
+  end
+
+  def center
+    #画像を2枚にしたタイミングでif文つける
+    cx = (@ball_image1.width / 2)
+    cy = (@ball_image1.height / 2)
+    [cx, cy]
   end
 
   def draw
-    @ball_image1.draw(@ball_x, @ball_y, 1)
+    @ball_image1.draw(@ball_x - @cx, @ball_y - @cy, 1)
   end
 end
 
 class MyWindow < Gosu::Window
-  attr_reader :weypoints 
+  attr_reader :waypoints 
+  attr_accessor :waypoints, :current_waypoint
   def initialize
     super 800, 600
     self.caption = 'RubyCamp2025SP tutorial'
-    @player = Player.new
+    @player = Player.instance
     @ball = Ball.new(@player)
     @image = Gosu::Image.new("images/field.png", tileable: false)
     @waypoints = [:e, :d, :b, :a, :c, :goal]
@@ -134,7 +150,16 @@ class MyWindow < Gosu::Window
   def update
     @player.update
     @ball.update
-    
+    exit if Gosu.button_down?(Gosu::KB_ESCAPE)
+
+    if @player.ball_hold == false
+      @ball.ball_x = 0
+      @ball.ball_y = 0
+      @player.set_image = @player.image2
+      @current_waypoint = @waypoints.index(:goal) 
+      @current_waypoint += 1 if @current_waypoint < @waypoints.length - 1
+      @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
+    end
 
     # 誤差を許容して目的地到達判定
     target_x, target_y = Checkpoints[@waypoints[@current_waypoint]]
@@ -163,6 +188,8 @@ class MyWindow < Gosu::Window
     @image.draw(0, 0, 0)
     draw_line(@player.x - 10, @player.y, Gosu::Color::RED, @player.x + 10, @player.y, Gosu::Color::RED, 2)
     draw_line(@player.x, @player.y - 10, Gosu::Color::RED, @player.x, @player.y + 10, Gosu::Color::RED, 2)
+    draw_line(@ball.ball_x - 10, @ball.ball_y, Gosu::Color::RED, @ball.ball_x + 10, @ball.ball_y, Gosu::Color::RED, 2)
+    draw_line(@ball.ball_x, @ball.ball_y - 10, Gosu::Color::RED, @ball.ball_x, @ball.ball_y + 10, Gosu::Color::RED, 2)
   end
 end
 
