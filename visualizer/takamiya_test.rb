@@ -1,5 +1,7 @@
 require 'gosu'
 
+require_relative 'server'
+
 Checkpoints = {
   a: [133, 300],
   b: [267, 167],
@@ -29,8 +31,6 @@ class Player
     @y_speed = 0
     @target = nil
     @angle = 104.2 - 270
-    @image1 = Gosu::Image.new("images/kani.png", tileable: false)
-    # @image2 = Gosu::Image.new("images/kani2.png", tileable: false)
     @image1 = Gosu::Image.new("images/kani.png", tileable: false)
     @image2 = Gosu::Image.new("images/kani2.png", tileable: false)
   end
@@ -74,6 +74,22 @@ class Player
   end
 end
 
+class ball
+  def initialize
+    @ball_x = 0
+    @ball_y = 0
+    @ball_image1 = Gosu::Image.new("images/kani.png", tileable: false)
+  end
+
+  def update
+    @ball_x = 667, @ball_y = 300
+  end
+
+  def draw
+    @ball_image1.draw(@ball_x, @ball_y, 1)
+  end
+end
+
 class MyWindow < Gosu::Window
   attr_reader :weypoints 
   def initialize
@@ -95,7 +111,6 @@ class MyWindow < Gosu::Window
     target_x, target_y = Checkpoints[@waypoints[@current_waypoint]]
     if (@player.x - target_x).abs < 1 && (@player.y - target_y).abs < 1
       @player.angle = deter_angle
-      p @player.angle
       @current_waypoint += 1 if @current_waypoint < @waypoints.length - 1
       @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
     end
@@ -105,18 +120,11 @@ class MyWindow < Gosu::Window
     @angle_x, @angle_y = @x, @y
     @angle_x = @next_dest[0]
     @angle_y = @next_dest[1]
-    puts "waypoints = #{@waypoints}"
-    p "current_waypoint = #{@current_waypoint}"
-    p "向かう場所 = #{@waypoints[@current_waypoint]}"
     @next_dest = Checkpoints[@waypoints[@current_waypoint + 1]]
-    p "next_dest = #{@next_dest}"
     dx = @next_dest[0] - @angle_x
     dy = @next_dest[1] - @angle_y
-    p "dx = #{dx}", "dy = #{dy}"
     angle_rad = Math.atan2(dy, dx)
-    p "角度差 = #{angle_rad}"
     angle_deg = angle_rad * 180 / Math::PI
-    p "最終角度 = #{angle_deg}"
     return angle_deg + 90
   end
 
@@ -128,4 +136,9 @@ class MyWindow < Gosu::Window
   end
 end
 
-MyWindow.new.show
+# Webrickサーバ開始
+Server.new.run
+
+# メインウィンドウ表示
+window = MyWindow.new
+window.show
