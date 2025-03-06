@@ -134,6 +134,7 @@ class MyWindow < Gosu::Window
   def update
     @player.update
     @ball.update
+    
 
     # 誤差を許容して目的地到達判定
     target_x, target_y = Checkpoints[@waypoints[@current_waypoint]]
