@@ -9,13 +9,31 @@
 lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
 lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
 
+@i2c = I2C.new()             # I2Cシリアルインターフェース初期化
+@vl53l0x = VL53L0X.new(@i2c)  # 距離センサー（VL53L0X）
+@vl53l0x.set_timeout(500)    # タイムアウト値設定（単位: ms）
+@range = 1000 #ボールとの距離
+
+@ball_hold = 0 #ボールを持っているか 0は持ってない 1は持ってる
+
+@servo = PWM.new(27, timer:2, channel:5, frequency:50) # 周波数は 50 に．timer と channel はオプション
+puts "サーボを0度に設定しました。"
+
 def kanimove(t) 
     @lm_pin1.duty(100)
     @lm_pin2.duty(71)
-    @rm_pin1.duty(100)
+    @rm_pin1.duty(99)
     @rm_pin2.duty(73)
     sleep t
     puts "#{t} 秒間移動しました"
+    @range = @vl53l0x.read_range_continuous_millimeters
+    puts @range
+    puts "TIMED OUT" if @vl53l0x.timeout_occurred
+    if @range <= 90
+        @servo.pulse_width_us(2000) # 90度に設定
+        puts "サーボが90度になりました"
+        @ball_hold = 1
+    end
     brake()
 end
 
@@ -40,35 +58,53 @@ elsif
         puts "#{t} 秒間左回転しました"
         brake()
     end
+    @range = @vl53l0x.read_range_continuous_millimeters
+    puts @range
+    puts "TIMED OUT" if @vl53l0x.timeout_occurred
+    if @range <= 90
+        @servo.pulse_width_us(2000) # 90度に設定
+        puts "サーボが90度になりました"
+        @ball_hold = 1
+    end
 end
 
 def brake
-    @lm_pin1.duty(100)
-    @lm_pin2.duty(100)
-    @rm_pin1.duty(100)
-    @rm_pin2.duty(100)
+    @lm_pin1.duty(50)
+    @lm_pin2.duty(50)
+    @rm_pin1.duty(50)
+    @rm_pin2.duty(50)
     puts "ブレーキを掛けました"
+    sleep 0.1
 end
 
-    @rm_pin1.duty(100)
-    @rm_pin2.duty(80)
-    sleep 0.2
-#回転してEの方向を向く
-kanirotate(0.32,@r)
+if !@vl53l0x.init
+    puts "initialize failed"
+else
+    @vl53l0x.start_continuous(100) # 100ms 間隔で計測する（タイムアウトより小さい値にしておくこと）
+end
 
+@servo.pulse_width_us(1300) # 0度に設定
+
+@rm_pin1.duty(100)
+@rm_pin2.duty(80)
+#回転してEの方向を向く
+kanirotate(0.3,@r)
+kanirotate(0.2,@l)
 #Eまで動く
-kanimove(3)
-kanirotate(0.05,@r)
 kanimove(3.5)
+kanirotate(0.2,@r)
+kanirotate(0.15,@l)
+kanimove(4)
 #Dの方向を向く
-kanirotate(3.4,@r)
+kanirotate(2.5,@r)
 
 #Dまで移動
-kanimove(2)
 kanimove(3)
+kanirotate(0.3,@l)
+kanimove(2)
 
 #回転、Bの方向を向く
-kanirotate(0.4,@l)
+kanirotate(2.5,@l)
 
 #Bまで移動
 5.times do
@@ -102,3 +138,5 @@ kanirotate(1,@r)
     sleep 6
 brake()
 
+
+	
