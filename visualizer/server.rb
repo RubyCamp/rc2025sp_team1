@@ -20,7 +20,7 @@ class BaseServlet < WEBrick::HTTPServlet::AbstractServlet
     if query.has_key?("target")
       Object.const_get(query["target"])
     else
-      Kani1
+      Player
     end
   end
 
@@ -94,9 +94,12 @@ end
 class ValueServlet < BaseServlet
   def do_GET(request, response)
     query = request.query
+    p query
     target= parse_target(query)
+    puts "target"
+    p target
     if validate(query, [:value])
-      target.instance.set_hold(query["value"].to_i)
+      target.instance.set_hold(query["value"].to_s == "true")
       succeeded(response)
     else
       failed(response)
