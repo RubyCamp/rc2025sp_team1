@@ -22,7 +22,7 @@ MoveTimes = {
 
 class Player
   attr_reader :x, :y
-  attr_accessor :angle
+  attr_accessor :x, :y, :angle
 
   def initialize
     @x = 700  
@@ -33,6 +33,7 @@ class Player
     @angle = 104.2 - 270
     @image1 = Gosu::Image.new("images/kani.png", tileable: false)
     @image2 = Gosu::Image.new("images/kani_ball.png", tileable: false)
+    @set_image = @image1
   end
 
   def center
@@ -70,19 +71,20 @@ class Player
   end
 
   def draw
-    @image1.draw_rot(@x, @y, 1, @angle)
+    @set_image.draw_rot(@x, @y, 1, @angle)
   end
 end
 
 class Ball
-  def initialize
+  def initialize(player)
+    @player = player
     @ball_x = 0
     @ball_y = 0
     @ball_image1 = Gosu::Image.new("images/ball1.png", tileable: false)
   end
 
   def update
-    if Gosu.button_down?(Gosu::KB_LEFT)
+    if Gosu.button_down?(Gosu::KB_E)
       @ball_x = 667
       @ball_y = 300 
     end
@@ -102,6 +104,10 @@ class Ball
       @ball_x = 400
       @ball_y = 450 
     end
+    if @player.x == @ball_x || @player.y == @ball_y
+      @ball_image1.visible = false
+      @player.set_image = @player.image2
+    end
   end
 
   def draw
@@ -115,7 +121,7 @@ class MyWindow < Gosu::Window
     super 800, 600
     self.caption = 'RubyCamp2025SP tutorial'
     @player = Player.new
-    @ball = Ball.new
+    @ball = Ball.new(@player)
     @image = Gosu::Image.new("images/field.png", tileable: false)
     @waypoints = [:e, :d, :b, :a, :c, :goal]
     @current_waypoint = 0
