@@ -91,6 +91,19 @@ class VisibleServlet < BaseServlet
   end
 end
 
+class ValueServlet < BaseServlet
+  def do_GET(request, response)
+    query = request.query
+    target= parse_target(query)
+    if validate(query, [:value])
+      target.instance.set_hold(query["value"].to_i)
+      succeeded(response)
+    else
+      failed(response)
+    end
+  end
+end
+
 # HTTPサーバクラス
 class Server
   # コンストラクタ
@@ -107,6 +120,7 @@ class Server
     @server.mount('/position', PositionServlet)
     @server.mount('/angle', AngleServlet)
     @server.mount('/visible', VisibleServlet)
+    @server.mount('/value', ValueServlet)
 
     # アプリケーション終了時の処理（サーバ停止）
     trap('INT') { @server.shutdown }

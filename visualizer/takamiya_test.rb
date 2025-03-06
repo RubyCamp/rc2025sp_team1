@@ -22,7 +22,7 @@ MoveTimes = {
 
 class Player
   attr_reader :x, :y
-  attr_accessor :x, :y, :angle, :image1, :image2, :set_image
+  attr_accessor :x, :y, :angle, :image1, :image2, :set_image, :ball_hold
 
   def initialize
     @x = 700  
@@ -34,7 +34,7 @@ class Player
     @image1 = Gosu::Image.new("images/kani.png", tileable: false)
     @image2 = Gosu::Image.new("images/kani_ball.png", tileable: false)
     @set_image = @image1
-    @boll_hold = 0
+    @ball_hold = 0
   end
 
   def center
@@ -69,6 +69,10 @@ class Player
       @target = nil
       @cx, @cy = center
     end
+  end
+
+  def set_hold(hold)
+    @ball_hold = hold
   end
 
   def draw
