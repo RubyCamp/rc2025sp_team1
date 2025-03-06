@@ -34,6 +34,7 @@ class Player
     @image1 = Gosu::Image.new("images/kani.png", tileable: false)
     @image2 = Gosu::Image.new("images/kani_ball.png", tileable: false)
     @set_image = @image1
+    @boll_hold = 0
   end
 
   def center
@@ -149,8 +150,12 @@ class MyWindow < Gosu::Window
     target_x, target_y = Checkpoints[@waypoints[@current_waypoint]]
     if (@player.x - target_x).abs < 1 && (@player.y - target_y).abs < 1
       @player.angle = deter_angle
-      @current_waypoint += 1 if @current_waypoint < @waypoints.length - 1
-      @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
+      if @player.boll_hold == 1 # センサーが反応した場合という条件を追加
+        @current_waypoint = @weypoints.index(:goal) # 次の目的地をgoalに変更
+      else
+        @current_waypoint += 1 if @current_waypoint < @waypoints.length - 1
+        @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
+      end
     end
   end
 
