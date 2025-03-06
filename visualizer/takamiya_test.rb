@@ -22,7 +22,7 @@ MoveTimes = {
 
 class Player
   attr_reader :x, :y
-  attr_accessor :x, :y, :angle
+  attr_accessor :x, :y, :angle, :image1, :image2, :set_image
 
   def initialize
     @x = 700  
@@ -105,7 +105,8 @@ class Ball
       @ball_y = 450 
     end
     if @player.x == @ball_x || @player.y == @ball_y
-      @ball_image1.visible = false
+      @ball_x = 0
+      @ball_y = 0
       @player.set_image = @player.image2
     end
   end
