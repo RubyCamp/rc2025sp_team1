@@ -31,6 +31,8 @@ class Player
     @angle = 104.2 - 270
     @image1 = Gosu::Image.new("images/kani.png", tileable: false)
     # @image2 = Gosu::Image.new("images/kani2.png", tileable: false)
+    @image1 = Gosu::Image.new("images/kani.png", tileable: false)
+    @image2 = Gosu::Image.new("images/kani2.png", tileable: false)
   end
 
   def center
@@ -54,9 +56,12 @@ class Player
     @y += @y_speed
     @cx, @cy = center
 
+    @cx, @cy = center
+
     # 目的地に到達したかチェック（厳密比較ではなく誤差を許容）
     if (@x - @target[0]).abs < 1 && (@y - @target[1]).abs < 1
       @x, @y = @target
+      @cx, @cy = center
       @x_speed = 0
       @y_speed = 0
       @target = nil
