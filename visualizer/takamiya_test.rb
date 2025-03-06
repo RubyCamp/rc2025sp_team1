@@ -90,8 +90,8 @@ class Ball
   attr_accessor :ball_x, :ball_y, :ball_image1
   def initialize(player)
     @player = player
-    @ball_x = 0
-    @ball_y = 0
+    @ball_x = -100
+    @ball_y = -100
     @ball_image1 = Gosu::Image.new("images/ball1.png", tileable: false)
   end
 
@@ -131,6 +131,44 @@ class Ball
   end
 end
 
+class Cutin
+  def initialize(image, x, y)
+    @image = image
+    @cutin_x = x
+    @cutin_y = y
+    @cutin_speed = 40  # 速度
+    @cuttime =80
+  end
+
+  def update
+    @cutin_x += @cutin_speed if @cutin_x < 100  # 目標地点まで移動
+    @cuttime -= 1
+    @cutin_x += @cutin_speed if @cuttime < 0
+  end
+
+  def draw
+    @image.draw(@cutin_x, @cutin_y, 10)
+  end
+end
+
+class SpeedLine
+  def initialize(image)
+    @image = image
+    @x = 0
+    @speed = 350
+  end
+
+  def update
+    @x += @speed
+    @x = 0 if @x > 600  # ループ
+  end
+
+  def draw
+    @image.draw(@x, 150, 2)
+    @image.draw(@x - 800, 150, 2) # 繋ぎ目用
+  end
+end
+
 class MyWindow < Gosu::Window
   attr_reader :waypoints 
   attr_accessor :waypoints, :current_waypoint
@@ -145,20 +183,37 @@ class MyWindow < Gosu::Window
     @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
     @x_angle, @y_angle = @player.x, @player.y
     @next_dest = [@x_angle, @y_angle]
+    @cutin_image = Gosu::Image.new("images/cutin1.png")
+    @cutin = Cutin.new(@cutin_image, -500, 150)  # 位置指定
+    @show_cutin = false
+    @cutin_time = 100
+    @speedline_image = Gosu::Image.new("images/speedline.jpg", tileable: true)
+    @speedline_bg = SpeedLine.new(@speedline_image)
   end
 
   def update
     @player.update
     @ball.update
     exit if Gosu.button_down?(Gosu::KB_ESCAPE)
+    @cutin.update if @show_cutin
 
-    if @player.ball_hold == false
-      @ball.ball_x = 0
-      @ball.ball_y = 0
-      @player.set_image = @player.image2
-      @current_waypoint = @waypoints.index(:goal) 
-      @current_waypoint += 1 if @current_waypoint < @waypoints.length - 1
-      @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
+    # if @player.ball_hold == false
+    if @player.x == @ball.ball_x && @player.y == @ball.ball_y
+      if @cutin_time > 1
+        puts "cutin_time = #{@cutin_time}"
+        @show_cutin = true
+        @current_waypoint = @waypoints.index(:goal) 
+        @speedline_bg.update
+        @cutin_time -= 1
+      else
+        @show_cutin = false
+        @ball.ball_x = -100
+        @ball.ball_y = -100
+        @player.set_image = @player.image2
+        @current_waypoint = @waypoints.index(:goal) 
+        @current_waypoint += 1 if @current_waypoint < @waypoints.length - 1
+        @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
+      end
     end
 
     # 誤差を許容して目的地到達判定
@@ -186,10 +241,12 @@ class MyWindow < Gosu::Window
     @player.draw
     @ball.draw
     @image.draw(0, 0, 0)
-    draw_line(@player.x - 10, @player.y, Gosu::Color::RED, @player.x + 10, @player.y, Gosu::Color::RED, 2)
-    draw_line(@player.x, @player.y - 10, Gosu::Color::RED, @player.x, @player.y + 10, Gosu::Color::RED, 2)
-    draw_line(@ball.ball_x - 10, @ball.ball_y, Gosu::Color::RED, @ball.ball_x + 10, @ball.ball_y, Gosu::Color::RED, 2)
-    draw_line(@ball.ball_x, @ball.ball_y - 10, Gosu::Color::RED, @ball.ball_x, @ball.ball_y + 10, Gosu::Color::RED, 2)
+    @cutin.draw if @show_cutin
+    @speedline_bg.draw if @show_cutin
+    # draw_line(@player.x - 10, @player.y, Gosu::Color::RED, @player.x + 10, @player.y, Gosu::Color::RED, 2)
+    # draw_line(@player.x, @player.y - 10, Gosu::Color::RED, @player.x, @player.y + 10, Gosu::Color::RED, 2)
+    # draw_line(@ball.ball_x - 10, @ball.ball_y, Gosu::Color::RED, @ball.ball_x + 10, @ball.ball_y, Gosu::Color::RED, 2)
+    # draw_line(@ball.ball_x, @ball.ball_y - 10, Gosu::Color::RED, @ball.ball_x, @ball.ball_y + 10, Gosu::Color::RED, 2)
   end
 end
 
