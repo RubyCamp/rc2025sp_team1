@@ -1,13 +1,16 @@
+wlan = WLAN.new('STA')
+wlan.connect("RubyCamp","shimanekko")
+
 # 右モーター初期化（引数のGPIO番号は全ての蟹ロボで共通）
-@rm_pin1 = PWM.new(25) # 右モーターPIN1
-@rm_pin2 = PWM.new(26) # 右モーターPIN2
+@rm_pin1 = PWM.new(25,timer:0,channel:1) # 右モーターPIN1
+@rm_pin2 = PWM.new(26,timer:0,channel:2) # 右モーターPIN2
 
 # 左モーター初期化（引数のGPIO番号は全ての蟹ロボで共通）
-@lm_pin1 = PWM.new(32) # 左モーターPIN1
-@lm_pin2 = PWM.new(33) # 左モーターPIN2
+@lm_pin1 = PWM.new(32,timer:1,channel:3) # 左モーターPIN1
+@lm_pin2 = PWM.new(33,timer:1,channel:4) # 左モーターPIN2
 
-lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
-lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
+@lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
+@lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
 
 @i2c = I2C.new()             # I2Cシリアルインターフェース初期化
 @vl53l0x = VL53L0X.new(@i2c)  # 距離センサー（VL53L0X）
@@ -33,6 +36,9 @@ def kanimove(t)
         @servo.pulse_width_us(2000) # 90度に設定
         puts "サーボが90度になりました"
         @ball_hold = 1
+        if wlan.connected?
+            HTTP.get("http://192.168.6.88:3000/value?value=false")
+        end
     end
     brake()
 end
@@ -65,6 +71,9 @@ elsif
         @servo.pulse_width_us(2000) # 90度に設定
         puts "サーボが90度になりました"
         @ball_hold = 1
+        if wlan.connected?
+            HTTP.get("http://192.168.6.88:3000/value?value=false")
+        end
     end
 end
 
@@ -93,8 +102,11 @@ kanirotate(0.1,@r)
 kanirotate(0.1,@r)
 kanimove(2.1)
 if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
+    if wlan.connected?
+        HTTP.get("http://192.168.6.88:3000/value?value=false")
+    end
 puts "ボールをつかみました！ゴールへ向かいます！"
-kanirotate(0.5,@l)
+kanirotate(0.5,@r)
     @lm_pin1.duty(100)
     @lm_pin2.duty(54)
     @rm_pin1.duty(100)
@@ -106,6 +118,7 @@ end
 7.times do
 kanirotate(0.4,@r)
 end
+kanirotate(0.1,@l)
 kanirotate(0.1,@l)
 
 #Dまで移動
@@ -130,6 +143,8 @@ end
 end
 kanirotate(0.2,@l)
 kanirotate(0.2,@l)
+kanirotate(0.2,@l)
+kanirotate(0.2,@l)
 kanimove(1)
 kanirotate(0.18,@l)
 kanimove(1)
@@ -144,14 +159,23 @@ kanirotate(1.5,@l)
 end
 
 #回転、Aの方向を向く
-kanirotate(5,@l)
+kanirotate(0.8,@l)
 
 #Aまで移動
 kanimove(3)
 kanimove(3)
 
+if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
+puts "ボールをつかみました！ゴールへ向かいます！"
+kanirotate(0.1,@l)
+    @lm_pin1.duty(100)
+    @lm_pin2.duty(55)
+    @rm_pin1.duty(100)
+    @rm_pin2.duty(60)
+    sleep
+end
 #回転、Cの方向を向く
-kanirotate(6,@l)
+kanirotate(3,@l)
 
 #Cまで移動
     @lm_pin1.duty(100)
@@ -160,16 +184,43 @@ kanirotate(6,@l)
     @rm_pin2.duty(60)
     sleep 6
 
-#回転、ゴールの方向を向く
-kanirotate(1,@r)
 
 #カニをゴールへシュート！超！エキサイティング！
-    @lm_pin1.duty(100)
-    @lm_pin2.duty(0)
-    @rm_pin1.duty(100)
-    @rm_pin2.duty(0)
-    sleep 6
-brake()
-
+   loop do
+           if (lux_right.read_raw <= 100)
+           # 左右モーター逆転
+           @lm_pin1.duty(0)
+           @lm_pin2.duty(100)
+           @rm_pin1.duty(0)
+           @rm_pin2.duty(100)
+           sleep 0.3
+           # 回転
+           @lm_pin1.duty(0)
+           @lm_pin2.duty(100)
+           @rm_pin1.duty(100)
+           @rm_pin2.duty(0)
+           sleep 0.3
+           elsif (lux_left.read_raw <= 100)
+           # 左右モーター逆転
+           @lm_pin1.duty(0)
+           @lm_pin2.duty(100)
+           @rm_pin1.duty(0)
+           @rm_pin2.duty(100)
+           sleep 0.3
+           # 回転
+           @lm_pin1.duty(100)
+           @lm_pin2.duty(0)
+           @rm_pin1.duty(0)
+           @rm_pin2.duty(100)
+           sleep 0.3
+           end
+       
+       # 左右モーター出力30%正回転
+       @lm_pin1.duty(100)
+       @lm_pin2.duty(70)
+       @rm_pin1.duty(100)
+       @rm_pin2.duty(70)
+       sleep (0.1)
+   end
 
 	
