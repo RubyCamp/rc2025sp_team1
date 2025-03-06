@@ -12,7 +12,7 @@ lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
 @i2c = I2C.new()             # I2Cシリアルインターフェース初期化
 @vl53l0x = VL53L0X.new(@i2c)  # 距離センサー（VL53L0X）
 @vl53l0x.set_timeout(500)    # タイムアウト値設定（単位: ms）
-@range = 1000 #ボールとの距離
+@range = 10000 #ボールとの距離
 
 @ball_hold = 0 #ボールを持っているか 0は持ってない 1は持ってる
 
@@ -44,14 +44,14 @@ def kanirotate(t, rl) # (秒数*0.2,右=0 左=1)
     if rl == 0 
         @lm_pin1.duty(100)
         @lm_pin2.duty(75)
-        @rm_pin1.duty(75)
-        @rm_pin2.duty(100)
+        @rm_pin1.duty(0)
+        @rm_pin2.duty(0)
         sleep t
         puts "#{t} 秒間右回転しました"
         brake()
 elsif
-        @lm_pin1.duty(75)
-        @lm_pin2.duty(100)
+        @lm_pin1.duty(0)
+        @lm_pin2.duty(0)
         @rm_pin1.duty(100)
         @rm_pin2.duty(75)
         sleep t
@@ -85,36 +85,34 @@ end
 
 @servo.pulse_width_us(1300) # 0度に設定
 
-@rm_pin1.duty(100)
-@rm_pin2.duty(80)
-#回転してEの方向を向く
-kanirotate(0.3,@r)
-kanirotate(0.2,@l)
+kanirotate(0.1,@l)
 
 #Eまで動く
 kanimove(3.5)
-kanirotate(0.2,@r)
-kanirotate(0.12,@l)
-kanimove(2.8)
+kanirotate(0.1,@r)
+kanirotate(0.1,@r)
+kanimove(2.1)
 if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
 puts "ボールをつかみました！ゴールへ向かいます！"
-kanirotate(0.5,@r)
+kanirotate(0.5,@l)
     @lm_pin1.duty(100)
-    @lm_pin2.duty(60)
+    @lm_pin2.duty(54)
     @rm_pin1.duty(100)
-    @rm_pin2.duty(54)
+    @rm_pin2.duty(50)
     sleep
 end
 
 #Dの方向を向く
-kanirotate(1.6,@r)
+7.times do
+kanirotate(0.4,@r)
+end
+kanirotate(0.1,@l)
 
 #Dまで移動
-kanimove(2)
-kanimove(2)
+kanimove(3)
 if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
 puts "ボールをつかみました！ゴールへ向かいます！"
-kanirotate(1.5,@l)
+kanirotate(3,@l)
     @lm_pin1.duty(100)
     @lm_pin2.duty(60)
     @rm_pin1.duty(100)
@@ -123,15 +121,18 @@ kanirotate(1.5,@l)
 end
 
 #回転、Bの方向を向く
-kanirotate(0.5,@l)
-
-
+4.times do
+    kanirotate(0.2,@l)
+end
 #Bまで移動
-kanimove(3)
-kanirotate(0.15,@l)
-kanimove(3)
+4.times do
+    kanimove(1)
+end
+kanirotate(0.2,@l)
+kanirotate(0.2,@l)
+kanimove(1)
 kanirotate(0.18,@l)
-kanimove(3)
+kanimove(1)
 if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
 puts "ボールをつかみました！ゴールへ向かいます！"
 kanirotate(1.5,@l)
@@ -143,14 +144,14 @@ kanirotate(1.5,@l)
 end
 
 #回転、Aの方向を向く
-kanirotate(1.5,@l)
+kanirotate(5,@l)
 
 #Aまで移動
 kanimove(3)
 kanimove(3)
 
 #回転、Cの方向を向く
-kanirotate(1.5,@l)
+kanirotate(6,@l)
 
 #Cまで移動
     @lm_pin1.duty(100)
