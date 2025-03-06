@@ -70,7 +70,7 @@ class Player
   end
 
   def draw
-    @image1.draw_rot(@x - @cx, @y - @cy, 1, @angle)
+    @image1.draw_rot(@x, @y, 1, @angle)
   end
 end
 
@@ -94,7 +94,8 @@ class MyWindow < Gosu::Window
     # 誤差を許容して目的地到達判定
     target_x, target_y = Checkpoints[@waypoints[@current_waypoint]]
     if (@player.x - target_x).abs < 1 && (@player.y - target_y).abs < 1
-      # @player.angle = deter_angle
+      @player.angle = deter_angle
+      p @player.angle
       @current_waypoint += 1 if @current_waypoint < @waypoints.length - 1
       @player.move_to(Checkpoints[@waypoints[@current_waypoint]], MoveTimes[@waypoints[@current_waypoint]])
     end
@@ -104,22 +105,26 @@ class MyWindow < Gosu::Window
     @angle_x, @angle_y = @x, @y
     @angle_x = @next_dest[0]
     @angle_y = @next_dest[1]
-    # p @waypoints
-    # p @current_waypoint
-    # p @waypoints[@current_waypoint]
-    @next_dest = Checkpoints[@waypoints[@current_waypoint]]
+    puts "waypoints = #{@waypoints}"
+    p "current_waypoint = #{@current_waypoint}"
+    p "向かう場所 = #{@waypoints[@current_waypoint]}"
+    @next_dest = Checkpoints[@waypoints[@current_waypoint + 1]]
+    p "next_dest = #{@next_dest}"
     dx = @next_dest[0] - @angle_x
     dy = @next_dest[1] - @angle_y
+    p "dx = #{dx}", "dy = #{dy}"
     angle_rad = Math.atan2(dy, dx)
+    p "角度差 = #{angle_rad}"
     angle_deg = angle_rad * 180 / Math::PI
-    return angle_rad - 30
+    p "最終角度 = #{angle_deg}"
+    return angle_deg + 90
   end
 
   def draw
     @player.draw
     @image.draw(0, 0, 0)
-    # draw_line(@player.x - 10, @player.y, Gosu::Color::RED, @player.x + 10, @player.y, Gosu::Color::RED, 2)
-    # draw_line(@player.x, @player.y - 10, Gosu::Color::RED, @player.x, @player.y + 10, Gosu::Color::RED, 2)
+    draw_line(@player.x - 10, @player.y, Gosu::Color::RED, @player.x + 10, @player.y, Gosu::Color::RED, 2)
+    draw_line(@player.x, @player.y - 10, Gosu::Color::RED, @player.x, @player.y + 10, Gosu::Color::RED, 2)
   end
 end
 
