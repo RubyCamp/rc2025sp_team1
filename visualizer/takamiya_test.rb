@@ -76,6 +76,7 @@ class Player
 end
 
 class Ball
+  attr_accessor :ball_x, :ball_y, :ball_image1
   def initialize(player)
     @player = player
     @ball_x = 0
@@ -84,6 +85,7 @@ class Ball
   end
 
   def update
+    @cx, @cy = center
     if Gosu.button_down?(Gosu::KB_E)
       @ball_x = 667
       @ball_y = 300 
@@ -111,8 +113,15 @@ class Ball
     end
   end
 
+  def center
+    #画像を2枚にしたタイミングでif文つける
+    cx = (@ball_image1.width / 2)
+    cy = (@ball_image1.height / 2)
+    [cx, cy]
+  end
+
   def draw
-    @ball_image1.draw(@ball_x, @ball_y, 1)
+    @ball_image1.draw(@ball_x - @cx, @ball_y - @cy, 1)
   end
 end
 
@@ -134,7 +143,7 @@ class MyWindow < Gosu::Window
   def update
     @player.update
     @ball.update
-    
+
 
     # 誤差を許容して目的地到達判定
     target_x, target_y = Checkpoints[@waypoints[@current_waypoint]]
@@ -163,6 +172,8 @@ class MyWindow < Gosu::Window
     @image.draw(0, 0, 0)
     draw_line(@player.x - 10, @player.y, Gosu::Color::RED, @player.x + 10, @player.y, Gosu::Color::RED, 2)
     draw_line(@player.x, @player.y - 10, Gosu::Color::RED, @player.x, @player.y + 10, Gosu::Color::RED, 2)
+    draw_line(@ball.ball_x - 10, @ball.ball_y, Gosu::Color::RED, @ball.ball_x + 10, @ball.ball_y, Gosu::Color::RED, 2)
+    draw_line(@ball.ball_x, @ball.ball_y - 10, Gosu::Color::RED, @ball.ball_x, @ball.ball_y + 10, Gosu::Color::RED, 2)
   end
 end
 
