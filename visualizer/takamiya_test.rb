@@ -32,7 +32,7 @@ class Player
     @target = nil
     @angle = 104.2 - 270
     @image1 = Gosu::Image.new("images/kani.png", tileable: false)
-    @image2 = Gosu::Image.new("images/kani2.png", tileable: false)
+    @image2 = Gosu::Image.new("images/kani_ball.png", tileable: false)
   end
 
   def center
@@ -74,15 +74,34 @@ class Player
   end
 end
 
-class ball
+class Ball
   def initialize
     @ball_x = 0
     @ball_y = 0
-    @ball_image1 = Gosu::Image.new("images/kani.png", tileable: false)
+    @ball_image1 = Gosu::Image.new("images/ball1.png", tileable: false)
   end
 
   def update
-    @ball_x = 667, @ball_y = 300
+    if Gosu.button_down?(Gosu::KB_LEFT)
+      @ball_x = 667
+      @ball_y = 300 
+    end
+    if Gosu.button_down?(Gosu::KB_D)
+      @ball_x = 533
+      @ball_y = 167 
+    end
+    if Gosu.button_down?(Gosu::KB_B)
+      @ball_x = 267
+      @ball_y = 167 
+    end
+    if Gosu.button_down?(Gosu::KB_A)
+      @ball_x = 133
+      @ball_y = 300 
+    end
+    if Gosu.button_down?(Gosu::KB_C)
+      @ball_x = 400
+      @ball_y = 450 
+    end
   end
 
   def draw
@@ -96,6 +115,7 @@ class MyWindow < Gosu::Window
     super 800, 600
     self.caption = 'RubyCamp2025SP tutorial'
     @player = Player.new
+    @ball = Ball.new
     @image = Gosu::Image.new("images/field.png", tileable: false)
     @waypoints = [:e, :d, :b, :a, :c, :goal]
     @current_waypoint = 0
@@ -106,6 +126,7 @@ class MyWindow < Gosu::Window
 
   def update
     @player.update
+    @ball.update
 
     # 誤差を許容して目的地到達判定
     target_x, target_y = Checkpoints[@waypoints[@current_waypoint]]
@@ -130,6 +151,7 @@ class MyWindow < Gosu::Window
 
   def draw
     @player.draw
+    @ball.draw
     @image.draw(0, 0, 0)
     draw_line(@player.x - 10, @player.y, Gosu::Color::RED, @player.x + 10, @player.y, Gosu::Color::RED, 2)
     draw_line(@player.x, @player.y - 10, Gosu::Color::RED, @player.x, @player.y + 10, Gosu::Color::RED, 2)
