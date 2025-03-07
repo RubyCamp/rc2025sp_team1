@@ -1,5 +1,13 @@
-wlan = WLAN.new('STA')
-wlan.connect("RubyCamp","shimanekko")
+
+@wlan = WLAN.new('STA')
+@wlan.connect("RubyCamp","shimanekko")
+
+if @wlan.connected?
+    puts "Wi-Fiに接続しました"
+else
+    puts "Wi-Fi接続に失敗しました"
+    exit
+end
 
 # 右モーター初期化（引数のGPIO番号は全ての蟹ロボで共通）
 @rm_pin1 = PWM.new(25,timer:0,channel:1) # 右モーターPIN1
@@ -19,6 +27,8 @@ wlan.connect("RubyCamp","shimanekko")
 
 @ball_hold = 0 #ボールを持っているか 0は持ってない 1は持ってる
 
+@http_switch = 0
+
 @servo = PWM.new(27, timer:2, channel:5, frequency:50) # 周波数は 50 に．timer と channel はオプション
 puts "サーボを0度に設定しました。"
 
@@ -36,8 +46,11 @@ def kanimove(t)
         @servo.pulse_width_us(2000) # 90度に設定
         puts "サーボが90度になりました"
         @ball_hold = 1
-        if wlan.connected?
-            HTTP.get("http://192.168.6.88:3000/value?value=false")
+        if @http_switch == 0
+            if @wlan.connected?
+                HTTP.get("http://192.168.6.88:3000/value?value=false")
+                @http_switch = 1
+            end
         end
     end
     brake()
@@ -71,8 +84,11 @@ elsif
         @servo.pulse_width_us(2000) # 90度に設定
         puts "サーボが90度になりました"
         @ball_hold = 1
-        if wlan.connected?
-            HTTP.get("http://192.168.6.88:3000/value?value=false")
+        if @http_switch == 0
+            if @wlan.connected?
+                HTTP.get("http://192.168.6.88:3000/value?value=false")
+                @http_switch = 1
+            end
         end
     end
 end
@@ -102,11 +118,8 @@ kanirotate(0.1,@r)
 kanirotate(0.1,@r)
 kanimove(2.1)
 if @ball_hold == 1 #ボールを持った場合、ゴールに一直線に突っ走る
-    if wlan.connected?
-        HTTP.get("http://192.168.6.88:3000/value?value=false")
-    end
-puts "ボールをつかみました！ゴールへ向かいます！"
-kanirotate(0.5,@r)
+    puts "ボールをつかみました！ゴールへ向かいます！"
+    kanirotate(0.5,@r)
     @lm_pin1.duty(100)
     @lm_pin2.duty(54)
     @rm_pin1.duty(100)
@@ -120,6 +133,7 @@ kanirotate(0.4,@r)
 end
 kanirotate(0.1,@l)
 kanirotate(0.1,@l)
+kanirotate(0.1,@r)
 
 #Dまで移動
 kanimove(3)
@@ -187,7 +201,7 @@ kanirotate(3,@l)
 
 #カニをゴールへシュート！超！エキサイティング！
    loop do
-           if (lux_right.read_raw <= 100)
+           if (lux_right.read_raw <= 100 || lux_right.read_raw >= 1900)
            # 左右モーター逆転
            @lm_pin1.duty(0)
            @lm_pin2.duty(100)
@@ -200,7 +214,7 @@ kanirotate(3,@l)
            @rm_pin1.duty(100)
            @rm_pin2.duty(0)
            sleep 0.3
-           elsif (lux_left.read_raw <= 100)
+           elsif (lux_left.read_raw <= 100 || lux_left.read_raw >= 1900)
            # 左右モーター逆転
            @lm_pin1.duty(0)
            @lm_pin2.duty(100)
