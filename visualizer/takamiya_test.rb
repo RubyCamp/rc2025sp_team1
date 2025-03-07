@@ -13,12 +13,12 @@ Checkpoints = {
 }
 
 MoveTimes = {
-  e: 6000,
-  d: 8000,
-  b: 10000,
-  a: 12000,
-  c: 14000,
-  goal: 16000
+  e: 10000,
+  d: 23000,
+  b: 35000,
+  a: 46000,
+  c: 56000,
+  goal: 66000
 }
 
 class Player
@@ -197,8 +197,8 @@ class MyWindow < Gosu::Window
     exit if Gosu.button_down?(Gosu::KB_ESCAPE)
     @cutin.update if @show_cutin
 
-    # if @player.ball_hold == false
-    if @player.x == @ball.ball_x && @player.y == @ball.ball_y
+    if @player.ball_hold == false
+    # if @player.x == @ball.ball_x && @player.y == @ball.ball_y
       if @cutin_time > 1
         puts "cutin_time = #{@cutin_time}"
         @show_cutin = true
